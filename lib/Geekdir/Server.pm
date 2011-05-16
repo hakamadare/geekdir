@@ -5,6 +5,7 @@ use strict;
 use Carp;
 use Data::Dumper;
 use Dancer;
+use HTML::Tidy;
 use Text::Markdown qw( markdown );
 
 use Geekdir;
@@ -25,6 +26,11 @@ set 'basedir'       => glob( '~/Dropbox/Notes/Notational\ Data' );
 my( $gd ) = Geekdir->new(
     basedir => setting( 'basedir' ),
 );
+my( $tidy ) = HTML::Tidy->new( {
+                                'output-html' => 1,
+                                'clean'       => 1,
+                               }
+);
 
 get '/' => sub {
     my( @directory ) = $gd->readdir( '/' );
@@ -34,7 +40,7 @@ get '/' => sub {
 get '/*' => sub {
     my $content = $gd->readfile( splat );
     if ( defined( $content) ) {
-        return( markdown( $content ) );
+        return( $tidy->clean( markdown( $content ) ) );
     }
     else {
         redirect( '/' );
