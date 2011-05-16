@@ -11,7 +11,7 @@ extends 'Geekdir::Path';
 sub read {
     my( $self ) = @_;
     opendir( my $DIR, $self->path );
-    return( sort( grep { !/\.{1,2}/} readdir( $DIR ) ) );
+    return( sort( grep { !/\.{1,2}$/ } readdir( $DIR ) ) );
 }
 
 sub create {

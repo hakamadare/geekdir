@@ -6,7 +6,6 @@ use Carp;
 use Data::Dumper;
 use Dancer;
 use Text::Markdown qw( markdown );
-require JSON;
 
 use Geekdir;
 
@@ -23,16 +22,13 @@ set 'warnings'      => 1;
 set 'basedir'       => glob( '~/Dropbox/Notes/Notational\ Data' );
 
 # objects we'll want to use repeatedly
-my( $json ) = JSON->new;
-my( $markdown ) = Text::Markdown->new;
-
 my( $gd ) = Geekdir->new(
     basedir => setting( 'basedir' ),
 );
 
 get '/' => sub {
     my( @directory ) = $gd->readdir( '/' );
-    return( $json->encode( \@directory ) );
+    return( to_json( \@directory ) );
 };
 
 get '/*' => sub {
