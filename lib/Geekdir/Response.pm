@@ -1,40 +1,41 @@
-package Geekdir;
+package Geekdir::Response;
 
 use Moose;
-use namespace::autoclean;
 use Moose::Util::TypeConstraints;
-use MooseX::Types;
-use MooseX::Types::Moose qw( Any Str );
+use namespace::autoclean;
 
+use MooseX::Types::Moose qw( Str Ref );
 use Geekdir::Types qw( Path );
 
-use Geekdir::Path::Dir;
-use Geekdir::Path::File;
-use Geekdir::Response;
+use JSON;
 
-use version; our $VERSION = qv('v0.0.1');
+extends 'Geekdir';
 
 # Module implementation here
-has 'basedir' => (
-    is      => 'ro',
+
+has 'path',
     isa     => Path,
-    coerce  => 1,
-);
+    is      => 'ro',
+    coerce  => 1;
 
-sub readdir {
-    my( $self, $target ) = @_;
-    my( $dir ) = Geekdir::Path::Dir->new( 
-        path => $self->basedir->subdir( $target ),
-    );
-    return( $dir->read );
-}
+# has 'error',
+#     isa     => Error,
+#     is      => 'ro',
+#     coerce  => 1;
 
-sub readfile {
-    my( $self, $target ) = @_;
-    my( $file ) = Geekdir::Path::File->new( 
-        path => $self->basedir->file( $target ), 
-    );
-    return( $file->read );
+has 'body',
+    isa     => Str|Ref,
+    is      => 'ro',
+    coerce  => 1;
+
+sub json {
+    my( $self ) = @_;
+    my( $json ) = {
+        path    => $self->path,
+        # error   => $self->error,
+        body    => $self->body,
+    };
+    return( encode_json( $json ) );
 }
 
 no Moose;
@@ -76,9 +77,6 @@ This document describes Geekdir version 0.0.1
     exported, or methods that may be called on objects belonging to the
     classes provided by the module.
 
-=head2 readdir()
-
-=head2 readfile()
 
 =head1 DIAGNOSTICS
 
